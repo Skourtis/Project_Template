@@ -1,0 +1,77 @@
+---
+title: "2020MQ044_QC"
+date: "`r Sys.Date()`"
+output:
+    html_document:
+      code_folding: hide
+      toc: true
+      toc_depth: 2
+      highlight: tango
+knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = encoding, output_file = file.path(dirname(inputFile), '2020MQ044.html')) })
+
+---
+
+
+```{r setup_packages,  echo=FALSE, cache=FALSE, warning= FALSE, message=FALSE}
+method = "DDA  MBR"
+pacman::p_load("knitr","readr","tidyverse", "openxlsx", "stringr",
+               "data.table","BiocManager","openxlsx","factoextra", "devtools",
+               "DescTools", "UpSetR", "magick", "proteus","SubCellBarCode")
+
+source_file_name <- here::here("Project_Codes",
+                               "functions.R")
+source(source_file_name)
+
+file_parsed = parse(source_file_name) %>% 
+    Filter(is_function, .)  
+unlist(Map(function_name, file_parsed))
+
+## Global options
+options(max.print="75")
+opts_chunk$set(cache=FALSE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+#opts_knit$set(root.dir = "./../")
+```
+
+We see that there are almost no proteins/peptides identified in the chrom_231,  and very few in the SS alone. This is mostly likely because of the extra node which only targets the Silac pairs meaning that the methodology works and there are no silac pairs in the unlabelled Chrom and very few pairs in the SS probably due to incomplete incorporatio.
+
+
+
+```{r loading_maxquant, fig.width = 14, fig.height=14}
+txt_folder <-  here::here("Project_Datasets",
+                            "2020MQ044",
+                            "txt")
+Quality_Control(txt_folder)
+condition_names <-  c(paste0("control_",1:3),
+                      paste0("sh_1_",1:3),
+                      paste0("sh_2_",1:3))
+samples_ids <-  1:9
+measure_col <-  "LFQ intensity"
+
+
+proteus_loading <- load_MaxQuant(txt_folder,
+                                        measure_col,
+                                        samples_ids,
+                                        condition_names)
+proteus::plotCount(proteus_loading$peptides)
+protein_groups <-  proteus_loading$proteins[["stats"]]%>%
+    dplyr::select(-variance,-ngood) %>%
+    mutate(Uniprot = str_match(id,"sp\\|([:graph:]*?)\\|")[,2],
+           mean_log2 = log2(1/mean)) 
+protein_groups %>% na.omit() %>% count(condition) %>% 
+    ggplot(aes(x = condition, y = n)) +
+    geom_col() + ggtitle("Proteins_per_condition")
+
+
+HUMAN_9606 <- read_tsv(here::here("Project_Datasets","HUMAN_9606_idmapping.dat"),
+                 col_names = FALSE) 
+
+HUMAN_9606_idmapping <- HUMAN_9606 %>% filter(X2 == 'Gene_Name')
+Wider_df <- protein_groups %>%# ungroup() %>% #distinct(condition, Uniprot, .keep_all = TRUE) %>%  
+    pivot_wider(id_cols = Uniprot, names_from = "condition", values_from = "mean_log2") 
+
+```
