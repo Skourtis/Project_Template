@@ -1,7 +1,7 @@
 #Settting up directory
-install.packages("pacman")
-pacman::p_load(piggyback, renv, here, tidyverse)
-
+install.packages("tidyverse")
+pacman::p_load(piggyback, renv, here, )
+renv::restore()
 piggyback::pb_track(here::here("Datasets")) %>%
     pb_upload()
 
