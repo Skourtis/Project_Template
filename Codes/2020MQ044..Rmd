@@ -83,3 +83,5 @@ Wider_df <- protein_groups %>%# ungroup() %>% #distinct(condition, Uniprot, .kee
     pivot_wider(id_cols = Uniprot, names_from = "condition", values_from = "mean_log2") 
 
 ```
+We will use the qvalue package for multiple-testing correction (after looking at what the distribution of the p_values looks like) and the
+https://www.bioconductor.org/packages/release/bioc/vignettes/qvalue/inst/doc/qvalue.pdf
