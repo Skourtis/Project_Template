@@ -13,12 +13,12 @@ knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = e
 
 
 ```{r setup_packages,  echo=FALSE, cache=FALSE, warning= FALSE, message=FALSE}
-method = "DDA  MBR"
+#method = "DDA  MBR"
 pacman::p_load("knitr","readr","tidyverse", "openxlsx", "stringr",
                "data.table","BiocManager","openxlsx","factoextra", "devtools",
                "DescTools", "UpSetR", "magick", "proteus","SubCellBarCode")
 
-source_file_name <- here::here("Project_Codes",
+source_file_name <- here::here("Codes",
                                "functions.R")
 source(source_file_name)
 
@@ -42,32 +42,34 @@ We see that there are almost no proteins/peptides identified in the chrom_231,  
 
 
 ```{r loading_maxquant, fig.width = 14, fig.height=14}
-txt_folder <-  here::here("Project_Datasets",
-                            "2020MQ044",
+txt_folder <-  here::here("Datasets", "Raw",
+                            "2020MQ044txt",
                             "txt")
 Quality_Control(txt_folder)
 condition_names <-  c(paste0("control_",1:3),
                       paste0("sh_1_",1:3),
                       paste0("sh_2_",1:3))
 samples_ids <-  1:9
-measure_col <-  "LFQ intensity"
+measure_col <-  "Intensity"
 
 
 proteus_loading <- load_MaxQuant(txt_folder,
                                         measure_col,
                                         samples_ids,
                                         condition_names)
-proteus::plotCount(proteus_loading$peptides)
+
+
+#proteus::plotCount(proteus_loading$peptides)
 protein_groups <-  proteus_loading$proteins[["stats"]]%>%
     dplyr::select(-variance,-ngood) %>%
     mutate(Uniprot = str_match(id,"sp\\|([:graph:]*?)\\|")[,2],
-           mean_log2 = log2(1/mean)) 
+           mean_log2 = log2(mean)) 
 protein_groups %>% na.omit() %>% count(condition) %>% 
     ggplot(aes(x = condition, y = n)) +
     geom_col() + ggtitle("Proteins_per_condition")
 
 
-HUMAN_9606 <- read_tsv(here::here("Project_Datasets","HUMAN_9606_idmapping.dat"),
+HUMAN_9606 <- read_tsv(here::here("Datasets","Raw","HUMAN_9606_idmapping.dat"),
                  col_names = FALSE) 
 
 HUMAN_9606_idmapping <- HUMAN_9606 %>% filter(X2 == 'Gene_Name')
