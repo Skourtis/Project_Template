@@ -1492,6 +1492,20 @@
       "Repository": "CRAN",
       "Hash": "b227d13e29222b4574486cfcbde077fa"
     },
+    "tarchetypes": {
+      "Package": "tarchetypes",
+      "Version": "0.0.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "be2b048ed0546462c12e89d59346fca6"
+    },
+    "targets": {
+      "Package": "targets",
+      "Version": "0.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b5ea4afbcf2db5100a356358808898eb"
+    },
     "testthat": {
       "Package": "testthat",
       "Version": "3.0.2",
@@ -1543,10 +1557,15 @@
     },
     "usethis": {
       "Package": "usethis",
-      "Version": "2.0.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "360e904f9e623286e1a0c6ca0a98c5f6"
+      "Version": "2.0.1.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "usethis",
+      "RemoteUsername": "r-lib",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "aaf79d8a01057a3c84ca77f6c52eaaf053c1d27f",
+      "Hash": "a23a16c253833e43fcb23f229ffc0bf4"
     },
     "utf8": {
       "Package": "utf8",
