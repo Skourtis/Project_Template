@@ -2,7 +2,7 @@
 ##Settting up directory
 #install.packages("pacman")
 pacman::p_load(piggyback, renv, here, tidyverse )
-
+#testthat::use_test()
 
 ## Created a first release directly on Github
 #pb_new_release("Skourtis/Project_Template")

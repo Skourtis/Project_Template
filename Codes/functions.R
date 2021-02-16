@@ -7,6 +7,10 @@ Quality_Control <- function(x){
     r = createReport(x)
 }
 
+addition <- function(x,y){
+  x+y
+}
+
 load_MaxQuant <- function(txt_folder, 
                           measure_col, 
                           samples_ids,

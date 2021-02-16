@@ -20,6 +20,12 @@ pacman::p_load("knitr","readr","tidyverse", "openxlsx", "stringr",
 
 source_file_name <- here::here("Codes",
                                "functions.R")
+test_file(here::here(
+    "Codes",
+    "tests",
+    "testthat",
+    "test_functions.R"
+))
 source(source_file_name)
 
 file_parsed = parse(source_file_name) %>% 
