@@ -18,6 +18,5 @@ pacman::p_load("biglm",
 create_plot <- function(data) {
   ggplot(data) +
     geom_histogram(aes(x = Ozone), bins = 12) +
-    theme_gray(24)+
-    ggtitle("Histogram")
+    theme_gray(24)
 }
