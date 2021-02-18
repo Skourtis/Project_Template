@@ -1,0 +1,11 @@
+name|type|parent|branches|progress
+raw_data_file|stem|raw_data_file|0|running
+raw_data_file|stem|raw_data_file|0|built
+raw_data|stem|raw_data|0|running
+raw_data|stem|raw_data|0|built
+data|stem|data|0|running
+data|stem|data|0|built
+fit|stem|fit|0|running
+fit|stem|fit|0|built
+hist|stem|hist|0|running
+hist|stem|hist|0|built

@@ -1,7 +1,8 @@
 #Settting up directory
 ##Settting up directory
 #install.packages("pacman")
-pacman::p_load(piggyback, renv, here, tidyverse )
+pacman::p_load(piggyback, renv, here, tidyverse, targets,
+               visNetwork)
 #testthat::use_test()
 
 ## Created a first release directly on Github
