@@ -1,13 +1,15 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|iteration|parent|children|seconds|warnings|error
-create_plot|function|b053d9cf17cbf882||||||||||||||
-raw_data_file|stem|8611240f7715715d|cbbcdc99e6139936|c3b5fc02cdc369c1|2110307107|C:/Users/skourtis/OneDrive - CRG - Centre de Regulacio Genomica/Bioinformatics Projects/Project_Templates/Datasets/Raw/raw_data.csv|94d1b6812691b4bf|20920dbb1a6fc21c|3044|file|vector|||0||
-raw_data|stem|7d447a65b271a192|000ed0cc054f0d35|a9e0bea86066eebe|-979620141|_targets/objects/raw_data|42ab61f0f94594cd|0379c188128bbe87|1505|rds|vector|||0.5||
-data|stem|2ca5295f92470cef|df3101ce91c63e21|502ddda85c2feb8e|1588979285|_targets/objects/data|be40331fea14bd76|0379c188128bbe87|1505|rds|vector|||0.01||
-fit|stem|fe093961b7680a58|aa0df6c5dbd10537|ec0ef46aae09c141|1780184594|_targets/objects/fit|593cb2e47cd80e4e|9dc706b8fed28f19|1965|rds|vector|||0||
-hist|stem|37be9b44ddf1c3ae|68877181ab74e51e|cc034f408c68d482|-1026346201|_targets/objects/hist|43fe510ceaf0013a|3c353030e5fb646e|44878|rds|vector|||0.02||
-create_plot|function|9a9f266c80d6a25e
+create_plot|function|e61c6a8da66f7057||||||||||||||
 raw_data_file|stem|eac4be650daf552d|cbbcdc99e6139936|c3b5fc02cdc369c1|2110307107|C:/Users/skourtis/OneDrive - CRG - Centre de Regulacio Genomica/Bioinformatics Projects/Project_Templates/Datasets/Raw/raw_data.csv|47c963b779fb1145|20920dbb1a6fc21c|3044|file|vector|||0||
 raw_data|stem|61d8681b3b24210f|000ed0cc054f0d35|30735c814d24b25d|-979620141|_targets/objects/raw_data|442cf825092ac5ee|a97d6e8847e768fe|1506|rds|vector|||0.09||
 data|stem|f48ef8b55643e0ae|df3101ce91c63e21|84389287dd8d2ca2|1588979285|_targets/objects/data|deafcece7dfda748|0379c188128bbe87|1505|rds|vector|||0.01||
 fit|stem|465fe038b645ff82|aa0df6c5dbd10537|7d53713f6a5cf419|1780184594|_targets/objects/fit|b7662c915418c14c|5f048c881922f08c|1966|rds|vector|||0||
-hist|stem|65f78deef6641dfa|68877181ab74e51e|5e0defccb2493ffa|-1026346201|_targets/objects/hist|4be3ea6532d2b91b|7e94fb28736b9ea5|44778|rds|vector|||0.01||
+hist|stem|ed61f2dbfa66f5d8|68877181ab74e51e|4706135c2164f0f2|-1026346201|_targets/objects/hist|ca555af228141179|139c7eb6bf23fe1c|44875|rds|vector|||0.01||
+create_plot|function|e61c6a8da66f7057
+raw_data_file|stem|eac4be650daf552d|cbbcdc99e6139936|c3b5fc02cdc369c1|2110307107|C:/Users/skourtis/OneDrive - CRG - Centre de Regulacio Genomica/Bioinformatics Projects/Project_Templates/Datasets/Raw/raw_data.csv|47c963b779fb1145|20920dbb1a6fc21c|3044|file|vector|||0||
+dataset|stem|f13566c79b81ce59|a8d01d6f5107071f|3231d3eb2c5eb031|914614260|_targets/objects/dataset|47ab10173825b87d|9b0159aade793684|179|rds|vector|||0.02||
+raw_data|stem|61d8681b3b24210f|000ed0cc054f0d35|30735c814d24b25d|-979620141|_targets/objects/raw_data|442cf825092ac5ee|a97d6e8847e768fe|1506|rds|vector|||0.09||
+report|stem|16f9c4757901080d|a4dff119ef37e4be|86eae7c063d28214|-237041703|Output/report.html*Output/report.Rmd|c7448baf852551b1|fab270499e79618b|630207|file|vector|||1.84||
+data|stem|f48ef8b55643e0ae|df3101ce91c63e21|84389287dd8d2ca2|1588979285|_targets/objects/data|deafcece7dfda748|0379c188128bbe87|1505|rds|vector|||0.01||
+fit|stem|465fe038b645ff82|aa0df6c5dbd10537|7d53713f6a5cf419|1780184594|_targets/objects/fit|b7662c915418c14c|5f048c881922f08c|1966|rds|vector|||0||
+hist|stem|ed61f2dbfa66f5d8|68877181ab74e51e|4706135c2164f0f2|-1026346201|_targets/objects/hist|ca555af228141179|139c7eb6bf23fe1c|44875|rds|vector|||0.01||

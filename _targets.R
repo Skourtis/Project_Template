@@ -1,4 +1,5 @@
 library(targets)
+library(tarchetypes)
 source(here::here("Codes","functions_minimal.R"))
 options(tidyverse.quiet = TRUE)
 tar_option_set(packages = c("biglm", "tidyverse"))
@@ -20,5 +21,7 @@ list(
             mutate(Ozone = replace_na(Ozone, mean(Ozone, na.rm = TRUE)))
     ),
     tar_target(hist, create_plot(data)),
-    tar_target(fit, biglm(Ozone ~ Wind + Temp, data))
+    tar_target(fit, biglm(Ozone ~ Wind + Temp, data)),
+    tar_target(dataset, data.frame(x = letters)),
+    tar_render(report, here::here("Output","report.Rmd"))
 )

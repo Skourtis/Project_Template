@@ -1,0 +1,9 @@
+---
+title: report
+output: html_document
+---
+
+```{r}
+library(targets)
+tar_read(dataset)
+```
