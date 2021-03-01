@@ -14,9 +14,14 @@ install.packages('visNetwork')
 #testthat::use_test()
 
 ## Created a first release directly on Github
-pb_new_release("Skourtis/Project_Template")
-#piggyback::pb_track(c("*.zip","*.dat","*.RData")) %>%
-    #pb_upload(repo = "Skourtis/Project_Template")
+#pb_new_release("Skourtis/Project_Template")
+piggyback::pb_track(c("Datasets/Raw/*.txt",
+                      "Datasets/Raw/*.dat",
+                      "Datasets/Raw/*.zip",
+                      "Datasets/Raw/*.RData"))
+
+piggyback::pb_track() %>%
+    pb_upload(repo = "Skourtis/Project_Template")
 
 ##end
 renv::snapshot()

@@ -3,9 +3,8 @@
 .RData
 .Ruserdata
 manifest.json
-C:/Users/skourtis/OneDrive - CRG - Centre de Regulacio Genomica/Bioinformatics Projects/Project_Templates/Datasets
-C:/Users/skourtis/OneDrive - CRG - Centre de Regulacio Genomica/Bioinformatics Projects/Project_Templates/Datasets/*
-*.zip
-Datasets
-*.dat
-*.RData
+C:/Users/skourtis/OneDrive - CRG - Centre de Regulacio Genomica/Bioinformatics Projects/Project_Templates/Datasets/Raw/*
+Datasets/Raw/*.txt
+Datasets/Raw/*.dat
+Datasets/Raw/*.zip
+Datasets/Raw/*.RData
