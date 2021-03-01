@@ -18,6 +18,7 @@ install.packages('visNetwork')
 piggyback::pb_track(c("Datasets/Raw/*.txt",
                       "Datasets/Raw/*.dat",
                       "Datasets/Raw/*.zip",
+                      "Datasets/Raw/*.csv",
                       "Datasets/Raw/*.RData"))
 
 piggyback::pb_track() %>%
