@@ -7,14 +7,7 @@ Quality_Control <- function(x){
     r = createReport(x)
 }
 
-addition <- function(x,y){
-  x+y
-}
-
-load_MaxQuant <- function(txt_folder, 
-                          measure_col, 
-                          samples_ids,
-                          condition_names){
+load_MaxQuant <- function(txt_folder){
     ### This function takes the txt folder, 
     ### the name of the measure_col,number of samples and 
     ### names of the conditions and output the peptides per condition and 
@@ -23,11 +16,11 @@ load_MaxQuant <- function(txt_folder,
      #                         "2020MQ044txt",
       #                        "txt")
   
-    #condition_names <-  c(paste0("control_",1:3),
-    #                      paste0("sh_1_",1:3),
-    #                      paste0("sh_2_",1:3))
-    #samples_ids <-  1:9
-    #measure_col <-  "Intensity"
+    condition_names <-  c(paste0("control"),paste0("control"),paste0("control"),
+                          paste0("sh_1"), paste0("sh_1"), paste0("sh_1"),
+                          paste0("sh_2"),paste0("sh_2"),paste0("sh_2"))
+    samples_ids <-  1:9
+    measure_col <-  "Intensity"
     
     measCols <- list(
         HL = measure_col
@@ -56,14 +49,12 @@ load_MaxQuant <- function(txt_folder,
                        measure = measure_col,
                        condition = condition_names,
                        sample = sort(evi$experiment %>% unique()),
-                       replicate = 1)
+                       replicate = 1,1,1,2,2,2,3,3,3)
     
-    
-#pepdat <- proteus::makePeptideTable(evi, 
-#                                        meta, 
- #                                       measure.cols=measCols, 
-  #                                      aggregate.fun=aggregateMedian, 
-   #                                     experiment.type="SILAC")
+    pepdat <- proteus::makePeptideTable(evi, 
+                                       meta,
+                                       measure.cols=measCols, 
+                                       experiment.type="label-free")
     
     measure_columns <- list(paste(measure_col,samples_ids, sep = " " )) %>% unlist %>%
         setNames(paste("Sample", samples_ids, sep = "_"))
@@ -71,12 +62,66 @@ load_MaxQuant <- function(txt_folder,
     list(proteins = proteus::readProteinGroups(paste0(txt_folder,
                             "/proteinGroups.txt"), 
                       meta,
-                      measure.cols = measure_columns)#,
-         #peptides = pepdat
+                      measure.cols = measure_columns),
+         peptides = pepdat, meta, measure.cols = measure_columns
          )
-    
-    
-    
+}
+load_MaxQuanttest <- function(txt_folder){
+  ### This function takes the txt folder, 
+  ### the name of the measure_col,number of samples and 
+  ### names of the conditions and output the peptides per condition and 
+  ### reads the Maxquant proteinGroups file
+  #txt_folder <-  here::here("Datasets", "Raw",
+  #                         "2020MQ044txt",
+  #                        "txt")
+  
+  condition_names <-  c(1:9)
+  samples_ids <-  1:9
+  measure_col <-  "Intensity"
+  
+  measCols <- list(
+    HL = measure_col
+  )
+  
+  eviCols <- list(
+    sequence = 'Sequence',
+    modified_sequence = 'Modified sequence',
+    modifications = 'Modifications',
+    protein_group = 'Proteins',
+    protein = 'Leading razor protein',
+    experiment = 'Experiment',
+    charge = 'Charge',
+    reverse = 'Reverse',
+    contaminant = 'Potential contaminant'
+  )
+  evi <- proteus::readEvidenceFile(paste0(txt_folder,
+                                          "/evidence.txt"), 
+                                   measure.cols=measCols, 
+                                   data.cols=eviCols, 
+                                   zeroes.are.missing=FALSE)
+  
+  
+  
+  meta <- data.frame(experiment = sort(evi$experiment %>% unique()),
+                     measure = measure_col,
+                     condition = condition_names,
+                     sample = sort(evi$experiment %>% unique()),
+                     replicate = 1,1,1,2,2,2,3,3,3)
+  
+  pepdat <- proteus::makePeptideTable(evi, 
+                                      meta,
+                                      measure.cols=measCols, 
+                                      experiment.type="label-free")
+  
+  measure_columns <- list(paste(measure_col,samples_ids, sep = " " )) %>% unlist %>%
+    setNames(paste("Sample", samples_ids, sep = "_"))
+  
+  list(proteins = proteus::readProteinGroups(paste0(txt_folder,
+                                                    "/proteinGroups.txt"), 
+                                             meta,
+                                             measure.cols = measure_columns),
+       peptides = pepdat, meta, measure.cols = measure_columns
+  )
 }
 
 

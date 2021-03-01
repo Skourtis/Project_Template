@@ -1,14 +1,24 @@
 #Settting up directory
 ##Settting up directory
-#install.packages("pacman")
+options(repos = getOption("repos")["CRAN"])
+install.packages("PTXQC")
+install.packages("pacman")
 pacman::p_load(piggyback, renv, here, tidyverse, targets,
                visNetwork)
+install.packages('piggyback')
+install.packages('renv')
+install.packages('here')
+install.packages('tidyverse')
+install.packages('targets')
+install.packages('visNetwork')
 #testthat::use_test()
 
 ## Created a first release directly on Github
-#pb_new_release("Skourtis/Project_Template")
-piggyback::pb_track(c("*.zip","*.dat","*.RData")) %>%
-    pb_upload(repo = "Skourtis/Project_Template")
+pb_new_release("Skourtis/Project_Template")
+#piggyback::pb_track(c("*.zip","*.dat","*.RData")) %>%
+    #pb_upload(repo = "Skourtis/Project_Template")
 
 ##end
 renv::snapshot()
+
+
