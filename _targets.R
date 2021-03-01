@@ -21,7 +21,7 @@ list(
             mutate(Ozone = replace_na(Ozone, mean(Ozone, na.rm = TRUE)))
     ),
     tar_target(hist, create_plot(data)),
+    tar_render(report, here::here("Output","report.Rmd")),
     tar_target(fit, biglm(Ozone ~ Wind + Temp, data)),
-    tar_target(dataset, data.frame(x = letters)),
-    tar_render(report, here::here("Output","report.Rmd"))
-)
+    tar_target(dataset, data.frame(x = letters))
+ )
