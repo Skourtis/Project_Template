@@ -169,31 +169,35 @@ prodat.med <- proteus::annotateProteins(prodat.med, annotations.id)
 
 ```{r Differential expression}
 #Basic differential expresion
-c_sh1 <-proteus::limmaDE(prodat.med, conditions=c('control','sh_1'))
-print(c_sh1)
-c_sh2 <- proteus::limmaDE(prodat.med, conditions= c('control', 'sh_2'))
-sh1_sh2 <- proteus::limmaDE(prodat.med, conditions= c('sh_1', 'sh_2'))
+c_sh1 <-proteus::limmaDE(prodat.med,
+                         conditions=c('control','sh_1'))
+c_sh2 <- proteus::limmaDE(prodat.med, 
+                          conditions= c('control', 'sh_2'))
+sh1_sh2 <- proteus::limmaDE(prodat.med, 
+                            conditions= c('sh_1', 'sh_2'))
 c_sh1
 proteus::plotPdist
 
 #shorter dataframe because I got stressed with the limmaDE one
 c_sh1short <- c_sh1[, c('protein', 'adj.P.Val')]
-c_sh1short
+c_sh1[which(c_sh1$adj.P.Val<=0.1),]
+
 c_sh1c_sh2short <- c_sh2[, c('protein', 'adj.P.Val')]
+c_sh2[which(c_sh2$adj.P.Val<=0.1),]
+
 sh1_sh2short <- sh1_sh2[, c('protein', 'adj.P.Val')]
-test1 <-c_sh1short[order(c_sh1short$adj.P.Val),]
-test1
-test2
-test3
+sh1_sh2[which(sh1_sh2$adj.P.Val<=0.1),]
+sh1_sh2
+
 
 #Table with adjusted P.values (BH) ascedent order
 test1 <-c_sh1short[order(c_sh1short$adj.P.Value),]
 test2 <-c_sh2short[order(c_sh2short$adj.P.Val),]
 test3 <-sh1_sh2short[order(sh1_sh2short$adj.P.Val),]
-test3
+
 #Plot the p-value distribution
-proteus::plotPdist(c_sh1 )
-proteus::plotPdist( c_sh2)
+proteus::plotPdist(c_sh1)
+proteus::plotPdist(c_sh2)
 proteus::plotPdist(sh1_sh2)
 
 #Unique proteins in each database
@@ -251,6 +255,22 @@ proteus_loading$peptides$stats[index_pept53,]
 
 ```
 
+```{r}
+BiocManager::install("qvalue")
+library('qvalue')
+qobj1 <- qvalue(p = c_sh1$P.Value, pi0=0.3) #pi0 is an estimation of true null hypothesis
+summary(qobj1)
+qobj2 <- qvalue(p = c_sh2$P.Value)
+
+summary(qobj2)
+
+subset(qobj2$qvalues, qobj2$qvalues<= 0.1)
+
+qobj3 <- qvalue(p = sh1_sh2$P.Value)
+summary(qobj3)
+subset(qobj3$qvalues, qobj3$qvalues<= 0.1)
+```
+
 ```{r Test of proteus peptide reading}
 #Finding p53 peptides but per samples instead of conditions
 seqp53<-proteus_loadingtest$peptides$pep2prot$sequence[str_which(proteus_loadingtest$peptides$pep2prot$protein,'P02340')]
@@ -264,19 +284,19 @@ for (i in 1:3) {
     print(seqp53[i])
     }
 proteus_loadingtest$peptides$stats[index_pept53,]
+```
+```{r}
 
-BiocManager::install("qvalue")
-library('qvalue')
-qobj1 <- qvalue(p = c_sh1$P.Value, pi0=0.3) #pi0 is an estimation of true null hypothesis
-summary(qobj1)
-subset(qobj$qvalues, qobj$qvalues<=0.1,lambda = seq(0.1, 0.95, 0.1),pi0.method='bootstrap')
-qobj2 <- qvalue(p = c_sh2$P.Value)
+```
 
-qobj2 <- qvalue(p = c_sh2$P.Value)
-
-subset(qobj2$qvalues, qobj2$qvalues<= 0.1)
-
+<<<<<<< HEAD
+=======
 qobj3 <- qvalue(p = sh1_sh2$P.Value)
 summary(qobj3)
 subset(qobj3$qvalues, qobj3$qvalues<= 0.1)
+<<<<<<< HEAD
 ```
+>>>>>>> f754664468f840c56716727458d8563ad61aff8a
+=======
+```
+>>>>>>> f754664468f840c56716727458d8563ad61aff8a
