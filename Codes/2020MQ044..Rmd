@@ -60,13 +60,33 @@ opts_chunk$set(cache=FALSE,
 txt_folder <-  here::here("Datasets", "Raw",
                             "2020MQ044txt",
                             "txt")
-Quality_Control(txt_folder)
-proteus_loading <- load_MaxQuant(txt_folder)
+# Quality_Control(txt_folder)
+ proteus_loading <- load_MaxQuant(txt_folder)
 
 ```
 We will use the qvalue package for multiple-testing correction (after looking at what the distribution of the p_values looks like) and the
 https://www.bioconductor.org/packages/release/bioc/vignettes/qvalue/inst/doc/qvalue.pdf
 ```{r proteus analysis}
+# testing <- proteus_loading$peptides$pep2prot %>% 
+#   left_join(proteus_loading$peptides$stats, 
+#             by = c("sequence" = "id")) %>%
+#   group_split(protein, condition)
+# 
+# functiony <- function(x){
+#   if(sum(x %>% pull(ngood))>1){
+#     x
+#   }else{
+#     x %>% 
+#       dplyr::mutate(mean = NA,
+#                     variance = NA)
+#   }
+# }
+# testing <-    purrr::map(.x = testing[1:5], functiony)
+# 
+# purrr::map(.x = testing[1], ~if_else(sum(.x %>% pull(ngood))>1,
+#                                      .x,
+#                                      rbind(.x,.x)))
+              
 proteus::plotCount(proteus_loading$peptides)
 peptides <- proteus_loading$peptides
 proteus::plotDetectionSimilarity(peptides, bin.size = 0.02)
@@ -106,16 +126,16 @@ prodat1.med <- proteus::normalizeData(proteins, norm.fun=limma::normalizeMedianV
 #Boxplot by condition
 proteus::plotSampleDistributions(proteins, title="Not normalized (by condition)", fill="condition", method="box") #fill-legend colors
 proteus::plotSampleDistributions(prodat1.med, title="Median normalized (by condition)", fill="condition", method="box")
-proteus::plotSampleDistributions(prodat.quant, title="Median normalized (by condition)", fill="condition", method="box")
+proteus::plotSampleDistributions(prodat.quant, title="Quant normalized (by condition)", fill="condition", method="box")
 
 #Box plot by sample
 proteus::plotSampleDistributions(proteins, title="Not normalized (by sample)", fill="sample", method="box") #fill-legend colors
 proteus::plotSampleDistributions(prodat1.med, title="Median normalized (by sample)", fill="sample", method="box")
-proteus::plotSampleDistributions(prodat.quant, title="Median normalized (by condition)", fill="sample", method="box")
+proteus::plotSampleDistributions(prodat.quant, title="Quant normalized (by condition)", fill="sample", method="box")
 
-proteus::plotMV(prodat.med, with.loess=TRUE)
+proteus::plotMV(prodat1.med, with.loess=TRUE)
 
-proteus::plotClustering(prodat.med)
+proteus::plotClustering(prodat1.med)
 
 
 
@@ -126,28 +146,28 @@ proteus::plotClustering(prodat.med)
 
 -Observation: protein-wise, sample 9 is the farthest from the others, while all other seem to cluster togheter, even going further to be clustered in their respective conditions (in exception to sample 3). However, peptide-wise, the furthest in the clustering tree was sample 8, though 9 was also in a different branch to all other samples.
 ```{r Protein annotation and  controls}
-#protein_groups <-  proteus_loading$proteins[["stats"]]%>%
- #·   dplyr::select(-variance,-ngood) %>%
-  #  mutate(Uniprot = str_match(id,"sp\\|([:graph:]*?)\\|")[,2],
-   #        mean_log2 = log2(mean)) #mutate->adds new variables in the  datafrmae
-#protein_groups %>% na.omit() %>% count(condition) %>% 
- #   ggplot(aes(x = condition, y = n)) +
-  #  geom_col() + ggtitle("Proteins_per_condition")
+# protein_groups <-  proteus_loading$proteins[["stats"]]%>%
+#   dplyr::select(-variance,-ngood) %>%
+#  mutate(Uniprot = str_match(id,"sp\\|([:graph:]*?)\\|")[,2],
+#        mean_log2 = log2(mean)) #mutate->adds new variables in the  datafrmae
+# protein_groups %>% na.omit() %>% count(condition) %>%
+#   ggplot(aes(x = condition, y = n)) +
+#  geom_col() + ggtitle("Proteins_per_condition")
 
 
-#MOUSE_10090 <- read_tsv(here::here("Datasets","MOUSE_10090_idmapping.gz"),col_names = FALSE) 
+MOUSE_10090 <- read_tsv(here::here("Datasets","Raw","MOUSE_10090_idmapping.dat.gz"),col_names = FALSE) 
 
 #MOUSE_10090_idmapping <- MOUSE_10090 %>% filter(X2 == 'Gene_Name')
-Wider_df <- protein_groups %>% ungroup() %>% distinct(condition, Uniprot, .keep_all = TRUE) %>%  
-    pivot_wider(id_cols = Uniprot, names_from = "condition", values_from = "mean_log2") 
-Wider_df
-
-purrr::map2(.x = column_to_rownames( Wider_df,"Uniprot"),
-            .y = names(Wider_df %>%
-                 column_to_rownames("Uniprot")), ~hist(x  =.x ,
-                                                       main = paste("Hist of", .y)))
-length(proteus_loading$proteins$stats$id) #16000 proteins detected but only 5300 annoted (number of peptides?)
-luni <- lapply(as.character(proteins$proteins), function(prot) {    
+# Wider_df <- protein_groups %>% ungroup() %>% distinct(condition, Uniprot, .keep_all = TRUE) %>%
+#     pivot_wider(id_cols = Uniprot, names_from = "condition", values_from = "mean_log2")
+# Wider_df
+# 
+# purrr::map2(.x = column_to_rownames( Wider_df,"Uniprot"),
+#             .y = names(Wider_df %>%
+#                  column_to_rownames("Uniprot")), ~hist(x  =.x ,
+#                                                        main = paste("Hist of", .y)))
+# length(proteus_loading$proteins$stats$id) #16000 proteins detected but only 5300 annoted (number of peptides?)
+luni <- lapply(as.character(proteins$proteins), function(prot) {
  if(grepl("sp\\|", prot)) {
    uniprot <- unlist(strsplit(prot, "|", fixed=TRUE))[2]
    c(prot, uniprot)
@@ -161,7 +181,7 @@ annotations.id2 <- unique(annotations.id)
 str(annotations.id)
 str(annotations.id2)
 
-prodat.med <- proteus::annotateProteins(prodat.med, annotations.id)
+prodat.med <- proteus::annotateProteins(prodat1.med, annotations.id)
 
 
 
@@ -176,7 +196,6 @@ c_sh2 <- proteus::limmaDE(prodat.med,
 sh1_sh2 <- proteus::limmaDE(prodat.med, 
                             conditions= c('sh_1', 'sh_2'))
 c_sh1
-proteus::plotPdist
 
 #shorter dataframe because I got stressed with the limmaDE one
 c_sh1short <- c_sh1[, c('protein', 'adj.P.Val')]
@@ -191,9 +210,10 @@ sh1_sh2
 
 
 #Table with adjusted P.values (BH) ascedent order
-test1 <-c_sh1short[order(c_sh1short$adj.P.Value),]
-test2 <-c_sh2short[order(c_sh2short$adj.P.Val),]
-test3 <-sh1_sh2short[order(sh1_sh2short$adj.P.Val),]
+# test1 <-c_sh1short %>%
+#   dplyr::arrange(desc(adj.P.Val))
+# test2 <-c_sh2short[order(c_sh2short$adj.P.Val),]
+# test3 <-sh1_sh2short[order(sh1_sh2short$adj.P.Val),]
 
 #Plot the p-value distribution
 proteus::plotPdist(c_sh1)

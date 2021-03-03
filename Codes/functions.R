@@ -16,9 +16,9 @@ load_MaxQuant <- function(txt_folder){
      #                         "2020MQ044txt",
       #                        "txt")
   
-    condition_names <-  c(paste0("control"),paste0("control"),paste0("control"),
-                          paste0("sh_1"), paste0("sh_1"), paste0("sh_1"),
-                          paste0("sh_2"),paste0("sh_2"),paste0("sh_2"))
+    condition_names <-  c(rep("control",3),
+                          rep("sh_1",3),
+                          rep("sh_2",3))
     samples_ids <-  1:9
     measure_col <-  "Intensity"
     
@@ -49,7 +49,7 @@ load_MaxQuant <- function(txt_folder){
                        measure = measure_col,
                        condition = condition_names,
                        sample = sort(evi$experiment %>% unique()),
-                       replicate = 1,1,1,2,2,2,3,3,3)
+                       replicate = c(rep(1,3),rep(2,3),rep(3,3)))
     
     pepdat <- proteus::makePeptideTable(evi, 
                                        meta,
