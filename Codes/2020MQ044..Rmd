@@ -20,7 +20,7 @@ pacman::p_load("knitr","readr","tidyverse", "stringr",
                "data.table","BiocManager", "devtools")
 #I changed the way to download the packages due to an error (readRDS(dest) no connection)
 install.packages("openxlsx")
-install.packages('factorextra')
+#install.packages('factorextra')
 install.packages('DescTools')
 install.packages('magick')
 devtools::install_github("hms-dbmi/UpSetR") 
@@ -63,12 +63,12 @@ txt_folder <-  here::here("Datasets", "Raw",
 Quality_Control(txt_folder)
 proteus_loading <- load_MaxQuant(txt_folder)
 
-
 ```
 We will use the qvalue package for multiple-testing correction (after looking at what the distribution of the p_values looks like) and the
 https://www.bioconductor.org/packages/release/bioc/vignettes/qvalue/inst/doc/qvalue.pdf
 ```{r proteus analysis}
 proteus::plotCount(proteus_loading$peptides)
+peptides <- proteus_loading$peptides
 proteus::plotDetectionSimilarity(peptides, bin.size = 0.02)
 proteus::plotDistanceMatrix(peptides)
 proteus::plotClustering(peptides)
@@ -101,7 +101,7 @@ summary(proteins)
 
 #Data normalization
 prodat.quant <- proteus::normalizeData(proteins, norm.fun=limma::normalizeQuantiles)
-prodat.med <- proteus::normalizeData(proteins, norm.fun=limma::normalizeMedianValues)
+prodat1.med <- proteus::normalizeData(proteins, norm.fun=limma::normalizeMedianValues)
 
 #Boxplot by condition
 proteus::plotSampleDistributions(proteins, title="Not normalized (by condition)", fill="condition", method="box") #fill-legend colors
@@ -146,7 +146,7 @@ purrr::map2(.x = column_to_rownames( Wider_df,"Uniprot"),
             .y = names(Wider_df %>%
                  column_to_rownames("Uniprot")), ~hist(x  =.x ,
                                                        main = paste("Hist of", .y)))
-proteus_loading$proteins$stats
+length(proteus_loading$proteins$stats$id) #16000 proteins detected but only 5300 annoted (number of peptides?)
 luni <- lapply(as.character(proteins$proteins), function(prot) {    
  if(grepl("sp\\|", prot)) {
    uniprot <- unlist(strsplit(prot, "|", fixed=TRUE))[2]
@@ -285,9 +285,48 @@ for (i in 1:3) {
     }
 proteus_loadingtest$peptides$stats[index_pept53,]
 ```
-```{r}
+
+```{r Transcriptomics}
+tc_sh1 <-  read_tsv(file=here::here("Datasets", "Raw", "DESeq2ALLShrink.shRNF-shREN.txt"))
+head(tc_sh1)
+hist(tc_sh1$pvalue, freq = FALSE)
+tc_sh2 <-  read_tsv(file=here::here("Datasets", "Raw", "DESeq2ALLShrink.shTrp53-shREN.txt"))
+head(tc_sh2)
+hist(tc_sh2$pvalue, freq = FALSE)
+
+
+BiocManager::install('BiomaRt')
+
+amart <- useMart('ENSEMBL_MART_MOUSE')
+# select mice db mart <- useDataset('hsapiens_gene_ensembl', mart)
+
+ESGN1 <- tc_sh1$ensambleID
+ESGN2 <- tc_sh2$EnsambleID
+ESGN_annot <- getBM(
+  mart = mart,   #database
+  attributes = c(  #output annotation
+    'ensembl_gene_id',
+    'external_gene_name',
+    'uniprot_gn_symbol',
+    'uniprot_gn_id'),
+  values= ESGN1,  #own dataset
+  uniqueRows=TRUE)
+#attach annotation to the initial dataframe
+#create dataframe with transcriptomic+proteomic data
+```
+```{r Clustering}
+BiocManager::install('clusterProfiler')
+BiocManager::install('GO.db')
+a
+remove.packages(BiocManager) #needs cachem to be installed
+ggo <- groupGO(gene     = gene,
+               OrgDb    = org.Hs.eg.db,
+               ont      = "CC",
+               level    = 3,
+               readable = TRUE)
 
 ```
+
 
 <<<<<<< HEAD
 =======
