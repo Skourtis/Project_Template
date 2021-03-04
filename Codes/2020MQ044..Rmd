@@ -15,16 +15,16 @@ knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = e
 ```{r setup_packages,  echo=FALSE, cache=FALSE, warning= FALSE, message=FALSE}
 #method = "DDA  MBR"
 
-install.packages('pacman')
+#install.packages('pacman')
 pacman::p_load("knitr","readr","tidyverse", "stringr",
                "data.table","BiocManager", "devtools")
 #I changed the way to download the packages due to an error (readRDS(dest) no connection)
-install.packages("openxlsx")
-#install.packages('factorextra')
-install.packages('DescTools')
-install.packages('magick')
-devtools::install_github("hms-dbmi/UpSetR") 
-BiocManager::install("SubCellBarCode")
+# install.packages("openxlsx")
+# #install.packages('factorextra')
+# install.packages('DescTools')
+# install.packages('magick')
+# devtools::install_github("hms-dbmi/UpSetR") 
+# BiocManager::install("SubCellBarCode")
 
 
 source_file_name <- here::here("Codes",
@@ -60,7 +60,7 @@ opts_chunk$set(cache=FALSE,
 txt_folder <-  here::here("Datasets", "Raw",
                             "2020MQ044txt",
                             "txt")
-# Quality_Control(txt_folder)
+Quality_Control(txt_folder)
  proteus_loading <- load_MaxQuant(txt_folder)
 
 ```
