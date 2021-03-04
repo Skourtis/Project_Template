@@ -86,6 +86,7 @@ https://www.bioconductor.org/packages/release/bioc/vignettes/qvalue/inst/doc/qva
 # purrr::map(.x = testing[1], ~if_else(sum(.x %>% pull(ngood))>1,
 #                                      .x,
 #                                      rbind(.x,.x)))
+PCA$
               
 proteus::plotCount(proteus_loading$peptides)
 peptides <- proteus_loading$peptides
@@ -319,6 +320,19 @@ BiocManager::install('BiomaRt')
 
 amart <- useMart('ENSEMBL_MART_MOUSE')
 # select mice db mart <- useDataset('hsapiens_gene_ensembl', mart)
+MOUSE_10090 <- read_tsv(here::here("Datasets","Raw","MOUSE_10090_idmapping.dat.gz"),col_names = FALSE) 
+MOUSE_10090
+tc_sh1
+prot_genes <- MOUSE_10090 %>% dplyr::filter(X2=='Ensembl')
+prot_genes <- subset(prot_genes, select=c('X1','X3'))+
+testp 
+
+n <- tc_sh1$ensambleID %>% unlist() %>% str_remove_all(pattern='\\.([:graph:]*)$')  
+tc_sh1$ensambleID <- n
+
+tc_sh1<- prot_genes %>%  left_join(y=tc_sh1,by= c('X3'='ensambleID'))
+testp
+
 
 ESGN1 <- tc_sh1$ensambleID
 ESGN2 <- tc_sh2$EnsambleID
@@ -344,6 +358,8 @@ ggo <- groupGO(gene     = gene,
                ont      = "CC",
                level    = 3,
                readable = TRUE)
+
+
 
 ```
 
