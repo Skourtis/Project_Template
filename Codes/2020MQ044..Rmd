@@ -86,6 +86,10 @@ https://www.bioconductor.org/packages/release/bioc/vignettes/qvalue/inst/doc/qva
 # purrr::map(.x = testing[1], ~if_else(sum(.x %>% pull(ngood))>1,
 #                                      .x,
 #                                      rbind(.x,.x)))
+pca_fit <- proteus::plotPCA(peptides)
+
+pca_fit
+
               
 proteus::plotCount(proteus_loading$peptides)
 peptides <- proteus_loading$peptides
@@ -288,6 +292,7 @@ subset(qobj2$qvalues, qobj2$qvalues<= 0.1)
 
 qobj3 <- qvalue(p = sh1_sh2$P.Value)
 summary(qobj3)
+
 subset(qobj3$qvalues, qobj3$qvalues<= 0.1)
 ```
 
@@ -319,31 +324,188 @@ BiocManager::install('BiomaRt')
 
 amart <- useMart('ENSEMBL_MART_MOUSE')
 # select mice db mart <- useDataset('hsapiens_gene_ensembl', mart)
+MOUSE_10090 <- read_tsv(here::here("Datasets","Raw","MOUSE_10090_idmapping.dat.gz"),col_names = FALSE) 
+MOUSE_10090
+tc_sh1
+prot_genes <- MOUSE_10090 %>% dplyr::filter(X2=='Ensembl')
+prot_genes <- subset(prot_genes, select=c('X1','X3'))
+ id,"\\.([:graph:]*)$"
 
-ESGN1 <- tc_sh1$ensambleID
-ESGN2 <- tc_sh2$EnsambleID
-ESGN_annot <- getBM(
-  mart = mart,   #database
-  attributes = c(  #output annotation
-    'ensembl_gene_id',
-    'external_gene_name',
-    'uniprot_gn_symbol',
-    'uniprot_gn_id'),
-  values= ESGN1,  #own dataset
-  uniqueRows=TRUE)
-#attach annotation to the initial dataframe
-#create dataframe with transcriptomic+proteomic data
+
+tc_sh1<- prot_genes %>%  left_join(y=tc_sh1,by= c('X3'='ensambleID'))
+
+tc_sh2<- prot_genes %>%  left_join(y=tc_sh2,by= c('X3'='EnsambleID'))
+str(tc_sh2)
+#♣transcriptomic analysis control vs rnf144b
+tc_sh1 %>% pull('padj') %>% set_names(tc_sh1$X1) %>% sort() %>% .[1:50]
+library(cachem)
+
+BiocManager::install('DO.db')
+install.packages('cachem')
+clusterProfiler::gseGO(geneList     = tc_sh1 %>% pull('padj') %>% set_names(tc_sh1$X1) %>% sort() %>% .[1:50],
+                       OrgDb        = org.Mm.eg.db,
+                       ont          = "BP",
+                       nPerm        = 1000,
+                       minGSSize    = 100,
+                       keyType = "UNIPROT",
+                       maxGSSize    = 700,
+                       pvalueCutoff = 0.05,
+                       verbose      = FALSE)
+
+
+
+ego <- clusterProfiler::enrichGO(
+    gene  = tc_sh1 %>% arrange(padj) %>% .[1:100,] %>% rownames() ,
+                universe      = rownames(tc_sh1),
+                OrgDb         = org.Mm.eg.db,
+                ont           = "CC",
+                pAdjustMethod = "BH",
+                pvalueCutoff  = 1,
+                qvalueCutoff  = 1,
+                keyType = "UNIPROT",
+                readable      = TRUE)
+
 ```
+
+
 ```{r Clustering}
 BiocManager::install('clusterProfiler')
-BiocManager::install('GO.db')
-a
-remove.packages(BiocManager) #needs cachem to be installed
-ggo <- groupGO(gene     = gene,
-               OrgDb    = org.Hs.eg.db,
-               ont      = "CC",
-               level    = 3,
-               readable = TRUE)
+BiocManager::install('dO.db')#needs cachem to be installed
+ggo <- clusterProfiler::groupGO(geneList     = sort(tc_sh1[1:10]),
+                       OrgDb        = org.Mm.eg.db,
+                       ont          = "BP",
+                       nPerm        = 1000,
+                       minGSSize    = 100,
+                       keyType = "UNIPROT",
+                       maxGSSize    = 700,
+                       pvalueCutoff = 0.05)
+library(broom)
+pca_fit <- prcomp(t(na.omit(log10(peptides$tab))), scale. = TRUE,   center = TRUE) 
+pca_fit %>% tidy(matrix= 'rotation')
+head(pca_fit)
+proteus::plotPCA(peptides)
+
+
+#augment(Mascot) %>% ggplot(aes(PC1, PC2, #color=outcome)) +   geom_point(size = 1.5)#PPA
+#PCA proteus-proteins data
+n <- proteins$stats$condition['control'] 
+s1 <- subset(proteins$stats, condition=='control') 
+s2 <- subset(proteins$stats, condition=='sh_1') 
+s3 <- subset(proteins$stats, condition=='sh_2') 
+
+
+s1<-s1 %>% subset( select = c('id','mean')) %>%  rename(control=mean)
+ 
+s2<-s2 %>% subset( select = c('mean')) %>% rename(sh_1=mean)
+ 
+s3<-s3 %>% subset( select = c('mean')) %>% rename(sh_2=mean)
+
+
+pep2
+
+
+
+
+pep2<-data.frame(s1,s2,s3)
+n <- pep2$id %>% unlist() %>% str_sub(4,9) 
+pep2$id <- n
+
+tc_sh1
+tc_sh2
+p_tc_sh1<- pep2 %>%  dplyr::right_join(y=tc_sh1,by= c('id'='id')) %>% subset(select=-c(X1,X3))
+p_tc_sh1
+
+
+p_tc_sh2<- pep2 %>%  dplyr::right_join(y=tc_sh2,by= c('id'='X1')) %>% subset(select=-c(X1,X3))
+p_tc_sh2
+
+
+```{r}
+
+```
+```{r PCAs}
+#Peptides PCA and analysis of p53 samples most important proteins in PC2
+                      
+library(broom)
+pca_pep <- prcomp(t(na.omit(log10(peptides$tab))), scale. = TRUE,   center = TRUE)  %>% 
+  tidy(matrix= 'rotation') 
+PCp53 <-pca_pep %>% subset(PC==2) 
+PCp53[order(abs(PCp53$value)),]
+
+length(pca_pep$column)
+n<-PCp53$column[1:100]
+peptides$pep2prot[n,] 
+n[1]
+proteus::plotPCA(peptides)
+
+#PCA analysis Mascot protein abundance data
+#Obtaining protein abundance mascot
+Mascot <- readxl::read_excel(here::here('Datasets','Raw','2020MQ044-pdresults-table.xlsx'), col_names = F) %>%
+    purrr::set_names(.[2,] %>% 
+                         unlist()) %>% 
+    .[-c(1:2),]
+Mascot <- Mascot %>% .[,str_detect(names(.),"Accession|_")] %>%
+    .[,-c(2:10)] %>% column_to_rownames('Accession')
+Mascot <- Mascot %>%
+    mutate(across(where(is.character),as.numeric)) %>%
+    na.omit()
+
+#Perform the PCA
+pca_masc <- prcomp(t(na.omit(log10(Mascot))), scale. = TRUE,   center = TRUE) 
+#install.packages("ggfortify")
+library(ggfortify)
+pca_masc
+#cutre graph
+autoplot(pca_masc, label = TRUE, label.size = 3)
+
+#Most important proteins for PCA in 2nd dimention (p53 samples more clustered)
+pca_masc <-pca_masc %>% tidy(matrix= 'rotation')
+PCmascp53 <-pca_masc %>% subset(PC==2) 
+PCmascp53[order(abs(PCmascp53$value), decreasing = TRUE),]
+
+
+#PCA proteus-proteins data
+#Create a dataframe that the PCA function can actually read
+n <- proteins$stats$condition['control'] 
+s1 <- subset(proteins$stats, condition=='control') 
+s2 <- subset(proteins$stats, condition=='sh_1') 
+s3 <- subset(proteins$stats, condition=='sh_2') 
+
+
+s1<-s1 %>% subset( select = c('id','mean')) %>%  rename(control=mean)
+s2<-s2 %>% subset( select = c('mean')) %>% rename(sh_1=mean)
+s3<-s3 %>% subset( select = c('mean')) %>% rename(sh_2=mean)
+
+pep2<-data.frame(s1,s2,s3)
+
+pep <- data.frame(s1,s2,s3)
+rownames(pep)<-NULL
+pep<-column_to_rownames(pep,var = 'id')
+
+
+#PCA for proteus protein data (by condition, not sample)
+pca_prot_eus <- prcomp(t(na.omit(log10(pep))), scale. = TRUE,   center = TRUE)
+
+autoplot(pca_prot_eus, label = TRUE, label.size = 4)
+pca_prot_eus <-pca_prot_eus %>% tidy(matrix= 'rotation')
+PCprotp53 <-pca_prot_eus %>% subset(PC==1) 
+PCprotp53[order(abs(PCmascp53$value)),]
+
+
+#Protein-transcriptomic data tables
+n <- pep2$id %>% unlist() %>% str_sub(4,9) 
+pep2$id <- n
+
+
+tc_sh1
+tc_sh2
+p_tc_sh1<- pep2 %>%  dplyr::right_join(y=tc_sh1,by= c('id'='id')) %>% subset(select=-c(X1,X3))
+p_tc_sh1
+
+
+p_tc_sh2<- pep2 %>%  dplyr::right_join(y=tc_sh2,by= c('id'='X1')) %>% subset(select=-c(X1,X3))
+p_tc_sh2
+rlang::last_error()
 
 ```
 
