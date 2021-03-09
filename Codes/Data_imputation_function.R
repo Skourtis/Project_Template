@@ -19,7 +19,7 @@ Proteomics_imputation <- function(Data, N_condition, N_rep){
     
    
     
-    deciles <- quantile(Data %>% as.vector() %>% na.omit(), #### finding the bottom 2 deciles of the distribution 
+    deciles <- quantile(as.matrix(Data) %>% as.vector() %>% na.omit(), #### finding the bottom 2 deciles of the distribution 
                         prob = seq(0, 1, length = 11), type = 5) %>%
         .[1:2]
     Data <- as.data.frame(Data) %>%

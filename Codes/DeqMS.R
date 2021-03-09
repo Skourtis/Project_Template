@@ -54,7 +54,7 @@ protein.matrix = log2(as.matrix(df.LFQ.filter))
 class = as.factor(c("H","H","H","L","L","L"))
 design = model.matrix(~0+class) # fitting without intercept
 
-fit1 = lmFit(protein.matrix,design = design)
+fit1 = limma::lmFit(protein.matrix,design = design)
 cont <- makeContrasts(classH-classL, levels = design)
 fit2 = contrasts.fit(fit1,contrasts = cont)
 fit3 <- eBayes(fit2)
@@ -65,8 +65,8 @@ fit3$count = pep.count.table[rownames(fit3$coefficients),"count"]
 #if min(fit3$count) return NA or 0, you should troubleshoot the error first
 min(fit3$count)
 ## [1] 1
-fit4_ctr = spectraCounteBayes(fit3)
-VarianceBoxplot(fit4_ctr, n=30, main = "Label-free dataset PXD000279",
+fit4_ctr = DEqMS::spectraCounteBayes(fit3)
+DEqMS::VarianceBoxplot(fit4_ctr, n=30, main = "Label-free dataset PXD000279",
                 xlab="peptide count + 1")
 
 df.prot = read.table(here::here("Datasets","Raw","2020MQ044txt","txt","proteinGroups.txt"),header=T,sep="\t",stringsAsFactors = F,
@@ -97,7 +97,7 @@ df.LFQ.filter_var_etna <- df.LFQ.filter %>% rownames_to_column("Uniprot") %>%
     group_by(Uniprot, Experiment) %>%
     summarise(mean_prot = mean(Abundance, na.rm = T),
               variance = var(Abundance, na.rm = T)) 
-var_etna <-     ggplot(df.LFQ.filter_var_etna,aes(x = Experiment, y = variance))+
+var_etna <-     ggplot(df.LFQ.filter_var_etna,aes(x = Experiment, y = log2(variance)))+
         geom_boxplot()+
         geom_jitter(alpha = 0.01)
 
@@ -139,4 +139,12 @@ rownames(df.prot) = df.prot$Majority.protein.IDs
 DEqMS.results$Gene.name = df.prot[DEqMS.results$gene,]$Gene.names
 head(DEqMS.results %>% arrange(adj.P.Val))
 
+A <- c(rep(0.01,1000),rep(0.04,1000))
+
+B <- purrr::map(c(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1),rep(0.04,1000))
+
+x <- sample(c(,D),
+            size = 20000,
+            prob = rep(c(1/2, 1/2) / L, L),
+            replace = TRUE)
 
